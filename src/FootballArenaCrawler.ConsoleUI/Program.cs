@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Neptuo;
+using Neptuo.Converters;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -30,6 +32,13 @@ namespace FootballArenaCrawler
 
         private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
+            Converts.Repository
+                .AddStringTo<int>(Int32.TryParse)
+                .AddStringTo<bool>(Boolean.TryParse)
+                .AddStringTo<decimal>(Decimal.TryParse)
+                .AddStringTo<double>(Double.TryParse)
+                .AddEnumSearchHandler(false);
+
             services.Configure<Configuration>(context.Configuration);
             services.AddTransient(provider =>
             {

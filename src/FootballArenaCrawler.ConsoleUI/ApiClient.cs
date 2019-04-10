@@ -75,5 +75,17 @@ namespace FootballArenaCrawler
             string htmlBody = await httpResponse.Content.ReadAsStringAsync();
             return htmlParser.ParsePlayers(htmlBody);
         }
+
+        public async Task<PlayerDetail> GetPlayerDetailAsync(int playerId, CancellationToken cancellationToken)
+        {
+            HttpResponseMessage httpResponse = await httpClient.GetAsync($"?goto=team-player-detail&idplayer={playerId}", cancellationToken);
+            if (httpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                string htmlBody = await httpResponse.Content.ReadAsStringAsync();
+                return htmlParser.ParsePlayerDetail(htmlBody);
+            }
+
+            throw Ensure.Exception.InvalidOperation("Get player detail failed.");
+        }
     }
 }
