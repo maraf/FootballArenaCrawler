@@ -1,12 +1,25 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
-namespace FootballArenaCrawler.ConsoleUI
+namespace FootballArenaCrawler
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            await new HostBuilder()
+               .ConfigureLogging(builder => builder.AddConsole())
+               .ConfigureServices(ConfigureServices)
+               .UseConsoleLifetime()
+               .RunConsoleAsync();
+        }
+
+        static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+        {
+            services.AddHostedService<HostedService>();
         }
     }
 }
