@@ -205,5 +205,15 @@ namespace FootballArenaCrawler
             group.Appearances = Int32.Parse(parts[0]);
             group.Goals = Int32.Parse(parts[1]);
         }
+
+        public int ParseSeasonNumber(string htmlBody)
+        {
+            var parser = new AngleSharp.Html.Parser.HtmlParser();
+            IHtmlDocument document = parser.ParseDocument(htmlBody);
+
+            IElement optionElement = document.QuerySelector("select[name=season] option:first-child");
+            string value = optionElement.GetAttribute("value");
+            return Int32.Parse(value);
+        }
     }
 }
