@@ -77,18 +77,18 @@ namespace FootballArenaCrawler.Models
 
         public override int GetHashCode()
         {
-            var hash = new HashCode();
-            hash.Add(Attacker);
-            hash.Add(Experiences);
-            hash.Add(Stamina);
-            hash.Add(Goalkeeper);
-            hash.Add(Tackling);
-            hash.Add(Header);
-            hash.Add(Winger);
-            hash.Add(Creativity);
-            hash.Add(Passing);
-            hash.Add(Attacking);
-            return hash.ToHashCode();
+            var hashCode = -1413490195;
+            hashCode = hashCode * -1521134295 + Attacker.GetHashCode();
+            hashCode = hashCode * -1521134295 + Experiences.GetHashCode();
+            hashCode = hashCode * -1521134295 + Stamina.GetHashCode();
+            hashCode = hashCode * -1521134295 + Goalkeeper.GetHashCode();
+            hashCode = hashCode * -1521134295 + Tackling.GetHashCode();
+            hashCode = hashCode * -1521134295 + Header.GetHashCode();
+            hashCode = hashCode * -1521134295 + Winger.GetHashCode();
+            hashCode = hashCode * -1521134295 + Creativity.GetHashCode();
+            hashCode = hashCode * -1521134295 + Passing.GetHashCode();
+            hashCode = hashCode * -1521134295 + Attacking.GetHashCode();
+            return hashCode;
         }
     }
 }

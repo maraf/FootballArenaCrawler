@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FootballArenaCrawler.Models\FootballArenaCrawler.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="AppSettings.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

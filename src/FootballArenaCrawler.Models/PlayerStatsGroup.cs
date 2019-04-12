@@ -18,7 +18,13 @@ namespace FootballArenaCrawler.Models
             Appearances == other.Appearances &&
             Goals == other.Goals;
 
-        public override int GetHashCode() => HashCode.Combine(Appearances, Goals);
+        public override int GetHashCode()
+        {
+            var hashCode = -1937534557;
+            hashCode = hashCode * -1521134295 + Appearances.GetHashCode();
+            hashCode = hashCode * -1521134295 + Goals.GetHashCode();
+            return hashCode;
+        }
 
         public override string ToString() => $"{Appearances}/{Goals}";
     }

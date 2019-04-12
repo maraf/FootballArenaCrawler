@@ -51,22 +51,22 @@ namespace FootballArenaCrawler.Models
 
         public override int GetHashCode()
         {
-            var hash = new HashCode();
-            hash.Add(base.GetHashCode());
-            hash.Add(Nationality);
-            hash.Add(Age);
-            hash.Add(Position);
-            hash.Add(Height);
-            hash.Add(Price);
-            hash.Add(Salary);
-            hash.Add(SignedAt);
-            hash.Add(Potential);
-            hash.Add(IsHome);
-            hash.Add(Quality.GetHashCode());
-            hash.Add(CurrentSeasonStats.GetHashCode());
-            hash.Add(PreviousSeasonStats.GetHashCode());
-            hash.Add(SumStats.GetHashCode());
-            return hash.ToHashCode();
+            var hashCode = -1326469202;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Nationality);
+            hashCode = hashCode * -1521134295 + Age.GetHashCode();
+            hashCode = hashCode * -1521134295 + Position.GetHashCode();
+            hashCode = hashCode * -1521134295 + Height.GetHashCode();
+            hashCode = hashCode * -1521134295 + Price.GetHashCode();
+            hashCode = hashCode * -1521134295 + Salary.GetHashCode();
+            hashCode = hashCode * -1521134295 + SignedAt.GetHashCode();
+            hashCode = hashCode * -1521134295 + Potential.GetHashCode();
+            hashCode = hashCode * -1521134295 + IsHome.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<PlayerQuality>.Default.GetHashCode(Quality);
+            hashCode = hashCode * -1521134295 + EqualityComparer<PlayerStats>.Default.GetHashCode(CurrentSeasonStats);
+            hashCode = hashCode * -1521134295 + EqualityComparer<PlayerStats>.Default.GetHashCode(PreviousSeasonStats);
+            hashCode = hashCode * -1521134295 + EqualityComparer<PlayerStats>.Default.GetHashCode(SumStats);
+            return hashCode;
         }
     }
 }

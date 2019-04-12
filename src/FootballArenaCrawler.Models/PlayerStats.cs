@@ -28,6 +28,15 @@ namespace FootballArenaCrawler.Models
                 EqualityComparer<PlayerStatsGroup>.Default.Equals(NationalTeam, other.NationalTeam);
         }
 
-        public override int GetHashCode() => HashCode.Combine(League, Cup, Friendly, InternationalCups, NationalTeam);
+        public override int GetHashCode()
+        {
+            var hashCode = -1903038347;
+            hashCode = hashCode * -1521134295 + EqualityComparer<PlayerStatsGroup>.Default.GetHashCode(League);
+            hashCode = hashCode * -1521134295 + EqualityComparer<PlayerStatsGroup>.Default.GetHashCode(Cup);
+            hashCode = hashCode * -1521134295 + EqualityComparer<PlayerStatsGroup>.Default.GetHashCode(Friendly);
+            hashCode = hashCode * -1521134295 + EqualityComparer<PlayerStatsGroup>.Default.GetHashCode(InternationalCups);
+            hashCode = hashCode * -1521134295 + EqualityComparer<PlayerStatsGroup>.Default.GetHashCode(NationalTeam);
+            return hashCode;
+        }
     }
 }

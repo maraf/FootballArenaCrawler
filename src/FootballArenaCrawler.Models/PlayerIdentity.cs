@@ -20,6 +20,12 @@ namespace FootballArenaCrawler.Models
             Id == other.Id &&
             Name == other.Name;
 
-        public override int GetHashCode() => HashCode.Combine(Id, Name);
+        public override int GetHashCode()
+        {
+            var hashCode = -1919740922;
+            hashCode = hashCode * -1521134295 + Id.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            return hashCode;
+        }
     }
 }
