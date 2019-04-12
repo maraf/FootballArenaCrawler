@@ -11,7 +11,7 @@ namespace FootballArenaCrawler.Models
         /// <summary>
         /// Celkem.
         /// </summary>
-        public int Attacker { get; set; }
+        public int Sum { get; set; }
 
         /// <summary>
         /// Zkušenosti.
@@ -56,14 +56,14 @@ namespace FootballArenaCrawler.Models
         /// <summary>
         /// Útok.
         /// </summary>
-        public int Attacking { get; set; }
+        public int Attacker { get; set; }
 
         public override bool Equals(object obj) => Equals(obj as PlayerQuality);
 
         public bool Equals(PlayerQuality other)
         {
             return other != null &&
-                Attacker == other.Attacker &&
+                Sum == other.Sum &&
                 Experiences == other.Experiences &&
                 Stamina == other.Stamina &&
                 Goalkeeper == other.Goalkeeper &&
@@ -72,13 +72,13 @@ namespace FootballArenaCrawler.Models
                 Winger == other.Winger &&
                 Creativity == other.Creativity &&
                 Passing == other.Passing &&
-                Attacking == other.Attacking;
+                Attacker == other.Attacker;
         }
 
         public override int GetHashCode()
         {
             var hashCode = -1413490195;
-            hashCode = hashCode * -1521134295 + Attacker.GetHashCode();
+            hashCode = hashCode * -1521134295 + Sum.GetHashCode();
             hashCode = hashCode * -1521134295 + Experiences.GetHashCode();
             hashCode = hashCode * -1521134295 + Stamina.GetHashCode();
             hashCode = hashCode * -1521134295 + Goalkeeper.GetHashCode();
@@ -87,7 +87,7 @@ namespace FootballArenaCrawler.Models
             hashCode = hashCode * -1521134295 + Winger.GetHashCode();
             hashCode = hashCode * -1521134295 + Creativity.GetHashCode();
             hashCode = hashCode * -1521134295 + Passing.GetHashCode();
-            hashCode = hashCode * -1521134295 + Attacking.GetHashCode();
+            hashCode = hashCode * -1521134295 + Attacker.GetHashCode();
             return hashCode;
         }
     }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Neptuo;
 using Neptuo.Converters;
 using System;
+using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -40,7 +41,7 @@ namespace FootballArenaCrawler
                 .AddStringTo<int>(Int32.TryParse)
                 .AddStringTo<bool>(Boolean.TryParse)
                 .AddStringTo<decimal>(Decimal.TryParse)
-                .AddStringTo<double>(Double.TryParse)
+                .AddStringTo<double>(TryParseDouble)
                 .AddEnumSearchHandler(false);
 
             services.Configure<Configuration>(context.Configuration);
@@ -54,11 +55,9 @@ namespace FootballArenaCrawler
 
                 return new ApiClient(httpClient, new HtmlParser());
             });
-            //services.AddHttpClient<ApiClient>(httpClient =>
-            //{
-            //    httpClient.BaseAddress = new Uri("https://www.footballarena.org/");
-            //});
-            services.AddHostedService<HostedService>();
+            services.AddHostedService<Service>();
         }
+
+        private static bool TryParseDouble(string input, out double output) => Double.TryParse(input, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out output);
     }
 }

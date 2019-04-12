@@ -1,5 +1,6 @@
 ﻿using FootballArenaCrawler.Models;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Neptuo;
 using Newtonsoft.Json;
@@ -13,19 +14,20 @@ using System.Threading.Tasks;
 
 namespace FootballArenaCrawler
 {
-    internal class HostedService : IHostedService
+    internal class Service : IHostedService
     {
         private readonly ApiClient client;
+        private readonly ILogger log;
         private readonly Configuration configuration;
 
-        public HostedService(ApiClient client, IOptions<Configuration> configuration)
+        public Service(ApiClient client, ILogger<Service> log, IOptions<Configuration> configuration)
         {
             Ensure.NotNull(client, "client");
+            Ensure.NotNull(log, "log");
             Ensure.NotNull(configuration, "configuration");
             this.client = client;
+            this.log = log;
             this.configuration = configuration.Value;
-
-            ValidateConfiguration();
         }
 
         private void ValidateConfiguration()
@@ -35,7 +37,7 @@ namespace FootballArenaCrawler
             {
                 if (error)
                 {
-                    Console.WriteLine(messsage);
+                    log.LogCritical(messsage);
                     isError = true;
                 }
             }
@@ -55,16 +57,23 @@ namespace FootballArenaCrawler
 
         private async Task RunAsync(CancellationToken cancellationToken)
         {
+            ValidateConfiguration();
+
+            log.LogInformation($"Exporting TeamId '{configuration.TeamId}'.");
+
             Export export = new Export();
 
             await client.LoginAsync(configuration.Username, configuration.Password, cancellationToken);
 
             export.SeasonNumber = await client.GetSeasonNumberAsync(cancellationToken);
+            log.LogInformation($"Exporting season number '{export.SeasonNumber}'.");
 
             var playerIdentities = await client.GetPlayersAsync(configuration.TeamId, cancellationToken);
+            log.LogInformation($"Found '{playerIdentities.Count}' player identities.");
 
             foreach (PlayerIdentity playerIdentity in playerIdentities)
             {
+                log.LogInformation($"Exporting player '{playerIdentity.Name}'.");
                 var playerDetail = await client.GetPlayerDetailAsync(playerIdentity.Id, cancellationToken);
                 export.Players.Add(playerDetail);
             }
@@ -75,43 +84,34 @@ namespace FootballArenaCrawler
 
         private void ExportJson(Export export)
         {
+            log.LogInformation($"Saving export to '{configuration.ExportPath}'.");
             string json = JsonConvert.SerializeObject(export, Formatting.Indented);
             File.WriteAllText(configuration.ExportPath, json);
-        }
-
-        private void PrintPlayerIdentities(IReadOnlyCollection<PlayerIdentity> playerIdentities)
-        {
-            foreach (PlayerIdentity playerIdentity in playerIdentities)
-                Console.WriteLine($"{String.Format("{0,10}", playerIdentity.Id)} {playerIdentity.Name}");
-        }
-
-        private void PrintPlayerDetail(PlayerDetail playerDetail)
-        {
-            void Write(string title, object value) => Console.WriteLine($"{String.Format("{0,12}", title)}: {value}");
-
-            Write("Id", playerDetail.Id);
-            Write("Name", playerDetail.Name);
-            Write("Nationality", playerDetail.Nationality);
-            Write("Age", playerDetail.Age);
-            Write("Position", playerDetail.Position);
-            Write("Height", playerDetail.Height);
-            Write("Price", playerDetail.Price);
-            Write("Salary", playerDetail.Salary);
-            Write("SignedAt", playerDetail.SignedAt.ToShortDateString());
-            Write("Potential", playerDetail.Potential);
-            Write("IsHome", playerDetail.IsHome);
         }
 
         #region IHostedService
 
         private CancellationTokenSource cancellationTokenSource;
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
-            await Task.Delay(500);
-
             cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            _ = RunAsync(cancellationTokenSource.Token);
+            RunOverrideAsync(cancellationTokenSource.Token).ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    log.LogCritical(t.Exception.InnerException, "Application failed.");
+                    Environment.Exit(1);
+                }
+            });
+
+            return Task.CompletedTask;
+        }
+
+        private async Task RunOverrideAsync(CancellationToken cancellationToken)
+        {
+            await Task.Delay(100);
+            await RunAsync(cancellationTokenSource.Token);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

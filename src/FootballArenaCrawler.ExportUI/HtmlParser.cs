@@ -43,12 +43,12 @@ namespace FootballArenaCrawler
             return result;
         }
 
-        public PlayerDetail ParsePlayerDetail(string htmlBody)
+        public PlayerExport ParsePlayerDetail(string htmlBody)
         {
             var parser = new AngleSharp.Html.Parser.HtmlParser();
             IHtmlDocument document = parser.ParseDocument(htmlBody);
 
-            PlayerDetail player = new PlayerDetail();
+            PlayerExport player = new PlayerExport();
 
             IElement mainContent = document.QuerySelector(".main_left");
             for (int i = 0; i < mainContent.Children.Length; i++)
@@ -62,7 +62,7 @@ namespace FootballArenaCrawler
             return player;
         }
 
-        private int ParseDetail(PlayerDetail player, IElement mainContent, int i, IElement childElement)
+        private int ParseDetail(PlayerExport player, IElement mainContent, int i, IElement childElement)
         {
             if (childElement.ClassList.Contains("se1"))
             {
@@ -72,32 +72,32 @@ namespace FootballArenaCrawler
                 {
                     string value = valueElement.Text();
 
-                    TrySetField<int>(title, value, "ID hráče", val => player.Id = val);
-                    TrySetField<string>(title, value, "Jméno", val => player.Name = val);
-                    TrySetField<string>(title, value, "Národnost", val => player.Nationality = val);
-                    TrySetField<int>(title, value, "Věk", val => player.Age = val);
+                    TrySetField<int>(title, value, "ID hráče", val => player.Info.Id = val);
+                    TrySetField<string>(title, value, "Jméno", val => player.Info.Name = val);
+                    TrySetField<string>(title, value, "Národnost", val => player.Info.Nationality = val);
+                    TrySetField<int>(title, value, "Věk", val => player.Info.Age = val);
                     TrySetField<string>(title, value, "Pozice", val =>
                     {
-                        if (val.Equals("Brankář", StringComparison.InvariantCultureIgnoreCase))
-                            player.Position = PlayerPosition.Goalkeeper;
-                        else if (val.Equals("Obránce", StringComparison.InvariantCultureIgnoreCase))
-                            player.Position = PlayerPosition.Defender;
-                        else if (val.Equals("Křídlo", StringComparison.InvariantCultureIgnoreCase))
-                            player.Position = PlayerPosition.Winger;
-                        else if (val.Equals("Střední záložník", StringComparison.InvariantCultureIgnoreCase))
-                            player.Position = PlayerPosition.Midfielder;
-                        else if (val.Equals("Útočník", StringComparison.InvariantCultureIgnoreCase))
-                            player.Position = PlayerPosition.Forwarder;
+                        if (val.StartsWith("Brankář", StringComparison.InvariantCultureIgnoreCase))
+                            player.Info.Position = PlayerPosition.Goalkeeper;
+                        else if (val.StartsWith("Obránce", StringComparison.InvariantCultureIgnoreCase))
+                            player.Info.Position = PlayerPosition.Defender;
+                        else if (val.StartsWith("Křídlo", StringComparison.InvariantCultureIgnoreCase))
+                            player.Info.Position = PlayerPosition.Winger;
+                        else if (val.StartsWith("Střední záložník", StringComparison.InvariantCultureIgnoreCase))
+                            player.Info.Position = PlayerPosition.Midfielder;
+                        else if (val.StartsWith("Útočník", StringComparison.InvariantCultureIgnoreCase))
+                            player.Info.Position = PlayerPosition.Forwarder;
                     });
-                    TrySetField<int>(title, value, "Výška", val => player.Height = val);
-                    TrySetField<decimal>(title, value, "Cena", val => player.Price = val);
-                    TrySetField<decimal>(title, value, "Plat", val => player.Salary = val);
-                    TrySetField<int>(title, value, "Potenciál", val => player.Potential = val);
+                    TrySetField<int>(title, value, "Výška", val => player.Info.Height = val);
+                    TrySetField<decimal>(title, value, "Cena", val => player.Info.Price = val);
+                    TrySetField<decimal>(title, value, "Plat", val => player.Info.Salary = val);
+                    TrySetField<int>(title, value, "Potenciál", val => player.Info.Potential = val);
                     TrySetField<string>(title, value, "V klubu od", val =>
                     {
                         string[] parts = val.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        player.SignedAt = DateTime.Parse(parts[0]);
-                        player.IsHome = parts.Length == 2;
+                        player.Info.SignedAt = DateTime.Parse(parts[0]);
+                        player.Info.IsHome = parts.Length == 2;
                     });
                 }
 
@@ -117,7 +117,7 @@ namespace FootballArenaCrawler
                     string value = valueElement.Text();
 
                     TrySetField<double>(title, value, "zkušenosti", val => quality.Experiences = val);
-                    TrySetField<int>(title, value, "celkem", val => quality.Attacker = val);
+                    TrySetField<int>(title, value, "celkem", val => quality.Sum = val);
                     TrySetField<int>(title, value, "výdrž", val => quality.Stamina = val);
                     TrySetField<int>(title, value, "brankář", val => quality.Goalkeeper = val);
                     TrySetField<int>(title, value, "odebírání míče", val => quality.Tackling = val);
@@ -158,7 +158,7 @@ namespace FootballArenaCrawler
             return false;
         }
 
-        private void ParseStats(PlayerDetail player, IElement childElement)
+        private void ParseStats(PlayerExport player, IElement childElement)
         {
             if (childElement.TagName.Equals("table", StringComparison.InvariantCultureIgnoreCase))
             {

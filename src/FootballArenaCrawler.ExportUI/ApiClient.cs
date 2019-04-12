@@ -76,7 +76,7 @@ namespace FootballArenaCrawler
             return htmlParser.ParsePlayers(htmlBody);
         }
 
-        public async Task<PlayerDetail> GetPlayerDetailAsync(int playerId, CancellationToken cancellationToken)
+        public async Task<PlayerExport> GetPlayerDetailAsync(int playerId, CancellationToken cancellationToken)
         {
             HttpResponseMessage httpResponse = await httpClient.GetAsync($"?goto=team-player-detail&idplayer={playerId}", cancellationToken);
             if (httpResponse.StatusCode == HttpStatusCode.OK)

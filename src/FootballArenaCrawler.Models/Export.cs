@@ -10,6 +10,6 @@ namespace FootballArenaCrawler.Models
     {
         public DateTime DateTime { get; } = DateTime.Now;
         public int SeasonNumber { get; set; }
-        public List<PlayerDetail> Players { get; } = new List<PlayerDetail>();
+        public List<PlayerExport> Players { get; } = new List<PlayerExport>();
     }
 }
