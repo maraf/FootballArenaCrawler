@@ -22,6 +22,8 @@ namespace FootballArenaCrawler.Models
         // TODO: Přejmenovat
         public bool IsHome { get; set; }
 
+        public PlayerQuality Quality { get; } = new PlayerQuality();
+
         public override bool Equals(object obj) => Equals(obj as PlayerDetail);
 
         public bool Equals(PlayerDetail other)
@@ -36,7 +38,8 @@ namespace FootballArenaCrawler.Models
                 Salary == other.Salary &&
                 SignedAt == other.SignedAt &&
                 Potential == other.Potential &&
-                IsHome == other.IsHome;
+                IsHome == other.IsHome &&
+                Quality.Equals(other.Quality);
         }
 
         public override int GetHashCode()
@@ -52,6 +55,7 @@ namespace FootballArenaCrawler.Models
             hash.Add(SignedAt);
             hash.Add(Potential);
             hash.Add(IsHome);
+            hash.Add(Quality.GetHashCode());
             return hash.ToHashCode();
         }
     }

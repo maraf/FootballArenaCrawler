@@ -82,6 +82,7 @@ namespace FootballArenaCrawler
             if (httpResponse.StatusCode == HttpStatusCode.OK)
             {
                 string htmlBody = await httpResponse.Content.ReadAsStringAsync();
+                System.IO.File.WriteAllText($@"C:\Temp\FootballArenaCrawler\Player-{playerId}.txt", htmlBody);
                 return htmlParser.ParsePlayerDetail(htmlBody);
             }
 

@@ -54,46 +54,80 @@ namespace FootballArenaCrawler
             for (int i = 0; i < mainContent.Children.Length; i++)
             {
                 IElement childElement = mainContent.Children[i];
-                if (childElement.ClassList.Contains("se1"))
-                {
-                    string title = childElement.InnerHtml;
-                    IElement valueElement = mainContent.Children[++i];
-                    if (valueElement.ClassList.Contains("se2"))
-                    {
-                        string value = valueElement.Text();
-
-                        TrySetField<int>(title, value, "ID hráče", val => player.Id = val);
-                        TrySetField<string>(title, value, "Jméno", val => player.Name = val);
-                        TrySetField<int>(title, value, "Věk", val => player.Age = val);
-                        TrySetField<string>(title, value, "Pozice", val =>
-                        {
-                            if (val.Equals("Brankář", StringComparison.InvariantCultureIgnoreCase))
-                                player.Position = PlayerPosition.Goalkeeper;
-                            else if (val.Equals("Obránce", StringComparison.InvariantCultureIgnoreCase))
-                                player.Position = PlayerPosition.Defender;
-                            else if (val.Equals("Křídlo", StringComparison.InvariantCultureIgnoreCase))
-                                player.Position = PlayerPosition.Winger;
-                            else if (val.Equals("Střední záložník", StringComparison.InvariantCultureIgnoreCase))
-                                player.Position = PlayerPosition.Midfielder;
-                            else if (val.Equals("Útočník", StringComparison.InvariantCultureIgnoreCase))
-                                player.Position = PlayerPosition.Forwarder;
-                        });
-                        TrySetField<int>(title, value, "Výška", val => player.Height = val);
-                        TrySetField<decimal>(title, value, "Cena", val => player.Price = val);
-                        TrySetField<decimal>(title, value, "Plat", val => player.Salary = val);
-                        TrySetField<int>(title, value, "Potenciál", val => player.Potential = val);
-                        TrySetField<string>(title, value, "V klubu od", val =>
-                        {
-                            string[] parts = val.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            player.SignedAt = DateTime.Parse(parts[0]);
-                            player.IsHome = parts.Length == 2;
-                        });
-                    }
-
-                }
+                i = ParseDetail(player, mainContent, i, childElement);
+                i = ParseQuality(player.Quality, mainContent, i, childElement);
             }
 
             return player;
+        }
+
+        private int ParseDetail(PlayerDetail player, IElement mainContent, int i, IElement childElement)
+        {
+            if (childElement.ClassList.Contains("se1"))
+            {
+                string title = childElement.InnerHtml;
+                IElement valueElement = mainContent.Children[++i];
+                if (valueElement.ClassList.Contains("se2"))
+                {
+                    string value = valueElement.Text();
+
+                    TrySetField<int>(title, value, "ID hráče", val => player.Id = val);
+                    TrySetField<string>(title, value, "Jméno", val => player.Name = val);
+                    TrySetField<int>(title, value, "Věk", val => player.Age = val);
+                    TrySetField<string>(title, value, "Pozice", val =>
+                    {
+                        if (val.Equals("Brankář", StringComparison.InvariantCultureIgnoreCase))
+                            player.Position = PlayerPosition.Goalkeeper;
+                        else if (val.Equals("Obránce", StringComparison.InvariantCultureIgnoreCase))
+                            player.Position = PlayerPosition.Defender;
+                        else if (val.Equals("Křídlo", StringComparison.InvariantCultureIgnoreCase))
+                            player.Position = PlayerPosition.Winger;
+                        else if (val.Equals("Střední záložník", StringComparison.InvariantCultureIgnoreCase))
+                            player.Position = PlayerPosition.Midfielder;
+                        else if (val.Equals("Útočník", StringComparison.InvariantCultureIgnoreCase))
+                            player.Position = PlayerPosition.Forwarder;
+                    });
+                    TrySetField<int>(title, value, "Výška", val => player.Height = val);
+                    TrySetField<decimal>(title, value, "Cena", val => player.Price = val);
+                    TrySetField<decimal>(title, value, "Plat", val => player.Salary = val);
+                    TrySetField<int>(title, value, "Potenciál", val => player.Potential = val);
+                    TrySetField<string>(title, value, "V klubu od", val =>
+                    {
+                        string[] parts = val.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        player.SignedAt = DateTime.Parse(parts[0]);
+                        player.IsHome = parts.Length == 2;
+                    });
+                }
+
+            }
+
+            return i;
+        }
+
+        private int ParseQuality(PlayerQuality quality, IElement mainContent, int i, IElement childElement)
+        {
+            if (childElement.ClassList.Contains("sk1"))
+            {
+                string title = childElement.Text();
+                IElement valueElement = mainContent.Children[++i];
+                if (valueElement.ClassList.Contains("sk2") || valueElement.ClassList.Contains("sk3"))
+                {
+                    string value = valueElement.Text();
+
+                    TrySetField<double>(title, value, "zkušenosti", val => quality.Experiences = val);
+                    TrySetField<int>(title, value, "celkem", val => quality.Attacker = val);
+                    TrySetField<int>(title, value, "výdrž", val => quality.Stamina = val);
+                    TrySetField<int>(title, value, "brankář", val => quality.Goalkeeper = val);
+                    TrySetField<int>(title, value, "odebírání míče", val => quality.Tackling = val);
+                    TrySetField<int>(title, value, "hlavičky", val => quality.Header = val);
+                    TrySetField<int>(title, value, "křídlo", val => quality.Winger = val);
+                    TrySetField<int>(title, value, "tvořivost", val => quality.Creativity = val);
+                    TrySetField<int>(title, value, "přihrávky", val => quality.Passing = val);
+                    TrySetField<int>(title, value, "útok", val => quality.Attacker = val);
+                }
+            }
+
+            return i;
         }
 
         private bool TrySetField<T>(string title, string value, string targetTitle, Action<T> setter)
