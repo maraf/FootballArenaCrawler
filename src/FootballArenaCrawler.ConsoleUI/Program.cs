@@ -15,7 +15,11 @@ namespace FootballArenaCrawler
         static async Task Main(string[] args)
         {
             await new HostBuilder()
+#if DEBUG
                .UseEnvironment("Development")
+#elif
+               .UseEnvironment("Production")
+#endif
                .ConfigureLogging(builder => builder.AddConsole())
                .ConfigureAppConfiguration(ConfigureAppConfiguration)
                .ConfigureServices(ConfigureServices)
@@ -27,7 +31,7 @@ namespace FootballArenaCrawler
         {
             builder
                 .AddJsonFile("AppSettings.json", true)
-                .AddJsonFile($"AppSettings.{context.HostingEnvironment.EnvironmentName}.json");
+                .AddJsonFile($"AppSettings.{context.HostingEnvironment.EnvironmentName}.json", true);
         }
 
         private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)

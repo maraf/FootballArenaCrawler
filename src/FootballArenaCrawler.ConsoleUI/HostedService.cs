@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +23,28 @@ namespace FootballArenaCrawler
             Ensure.NotNull(configuration, "configuration");
             this.client = client;
             this.configuration = configuration.Value;
+
+            ValidateConfiguration();
+        }
+
+        private void ValidateConfiguration()
+        {
+            bool isError = false;
+            void SetError(bool error, string messsage)
+            {
+                if (error)
+                {
+                    Console.WriteLine(messsage);
+                    isError = true; 
+                }
+            }
+
+            SetError(String.IsNullOrEmpty(configuration.Username), "Missing Username");
+            SetError(String.IsNullOrEmpty(configuration.Password), "Missing Password");
+            SetError(configuration.TeamId <= 0, "Missing TeamId");
+
+            if (isError)
+                throw Ensure.Exception.InvalidOperation("Configuration validation failed.");
         }
 
         private async Task RunAsync(CancellationToken cancellationToken)
