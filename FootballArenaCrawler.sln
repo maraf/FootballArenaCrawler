@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FootballArenaCrawler.ConsoleUI", "src\FootballArenaCrawler.ConsoleUI\FootballArenaCrawler.ConsoleUI.csproj", "{3DAB1B59-6FB6-49B7-AB96-934724D55170}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FootballArenaCrawler.ExportUI", "src\FootballArenaCrawler.ExportUI\FootballArenaCrawler.ExportUI.csproj", "{3DAB1B59-6FB6-49B7-AB96-934724D55170}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FootballArenaCrawler.Models", "src\FootballArenaCrawler.Models\FootballArenaCrawler.Models.csproj", "{1479C7E7-CDFD-497A-81BE-7DAE8BC8775A}"
 EndProject
