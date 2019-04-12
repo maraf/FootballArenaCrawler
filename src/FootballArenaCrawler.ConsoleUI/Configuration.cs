@@ -11,5 +11,6 @@ namespace FootballArenaCrawler
         public string Username { get; set; }
         public string Password { get; set; }
         public int TeamId { get; set; }
+        public string ExportPath { get; set; }
     }
 }

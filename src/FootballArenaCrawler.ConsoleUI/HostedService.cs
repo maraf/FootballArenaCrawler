@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Neptuo;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,13 +36,18 @@ namespace FootballArenaCrawler
                 if (error)
                 {
                     Console.WriteLine(messsage);
-                    isError = true; 
+                    isError = true;
                 }
             }
 
             SetError(String.IsNullOrEmpty(configuration.Username), "Missing Username");
             SetError(String.IsNullOrEmpty(configuration.Password), "Missing Password");
             SetError(configuration.TeamId <= 0, "Missing TeamId");
+            SetError(String.IsNullOrEmpty(configuration.ExportPath), "Missing ExportPath");
+
+            string directoryPath = Path.GetDirectoryName(configuration.ExportPath);
+            if (!String.IsNullOrEmpty(directoryPath))
+                SetError(!Directory.Exists(directoryPath), "Missing ExportPath directory doesn't exist");
 
             if (isError)
                 throw Ensure.Exception.InvalidOperation("Configuration validation failed.");
@@ -49,16 +55,28 @@ namespace FootballArenaCrawler
 
         private async Task RunAsync(CancellationToken cancellationToken)
         {
+            Export export = new Export();
+
             await client.LoginAsync(configuration.Username, configuration.Password, cancellationToken);
 
+            export.SeasonNumber = await client.GetSeasonNumberAsync(cancellationToken);
+
             var playerIdentities = await client.GetPlayersAsync(configuration.TeamId, cancellationToken);
-            PrintPlayerIdentities(playerIdentities);
 
             foreach (PlayerIdentity playerIdentity in playerIdentities)
             {
-                var playerDetail = await client.GetPlayerDetailAsync(playerIdentities.First().Id, cancellationToken);
-                PrintPlayerDetail(playerDetail);
+                var playerDetail = await client.GetPlayerDetailAsync(playerIdentity.Id, cancellationToken);
+                export.Players.Add(playerDetail);
             }
+
+            ExportJson(export);
+            Environment.Exit(0);
+        }
+
+        private void ExportJson(Export export)
+        {
+            string json = JsonConvert.SerializeObject(export, Formatting.Indented);
+            File.WriteAllText(configuration.ExportPath, json);
         }
 
         private void PrintPlayerIdentities(IReadOnlyCollection<PlayerIdentity> playerIdentities)

@@ -17,7 +17,7 @@ namespace FootballArenaCrawler
             await new HostBuilder()
 #if DEBUG
                .UseEnvironment("Development")
-#elif
+#else
                .UseEnvironment("Production")
 #endif
                .ConfigureLogging(builder => builder.AddConsole())
