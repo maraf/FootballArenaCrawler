@@ -24,6 +24,10 @@ namespace FootballArenaCrawler.Models
 
         public PlayerQuality Quality { get; } = new PlayerQuality();
 
+        public PlayerStats CurrentSeasonStats { get; } = new PlayerStats();
+        public PlayerStats PreviousSeasonStats { get; } = new PlayerStats();
+        public PlayerStats SumStats { get; } = new PlayerStats();
+
         public override bool Equals(object obj) => Equals(obj as PlayerDetail);
 
         public bool Equals(PlayerDetail other)
@@ -39,7 +43,10 @@ namespace FootballArenaCrawler.Models
                 SignedAt == other.SignedAt &&
                 Potential == other.Potential &&
                 IsHome == other.IsHome &&
-                Quality.Equals(other.Quality);
+                EqualityComparer<PlayerQuality>.Default.Equals(Quality, other.Quality) &&
+                EqualityComparer<PlayerStats>.Default.Equals(CurrentSeasonStats, other.CurrentSeasonStats) &&
+                EqualityComparer<PlayerStats>.Default.Equals(PreviousSeasonStats, other.PreviousSeasonStats) &&
+                EqualityComparer<PlayerStats>.Default.Equals(SumStats, other.SumStats);
         }
 
         public override int GetHashCode()
@@ -56,6 +63,9 @@ namespace FootballArenaCrawler.Models
             hash.Add(Potential);
             hash.Add(IsHome);
             hash.Add(Quality.GetHashCode());
+            hash.Add(CurrentSeasonStats.GetHashCode());
+            hash.Add(PreviousSeasonStats.GetHashCode());
+            hash.Add(SumStats.GetHashCode());
             return hash.ToHashCode();
         }
     }

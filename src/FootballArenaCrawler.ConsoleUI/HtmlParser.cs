@@ -56,6 +56,7 @@ namespace FootballArenaCrawler
                 IElement childElement = mainContent.Children[i];
                 i = ParseDetail(player, mainContent, i, childElement);
                 i = ParseQuality(player.Quality, mainContent, i, childElement);
+                ParseStats(player, childElement);
             }
 
             return player;
@@ -73,6 +74,7 @@ namespace FootballArenaCrawler
 
                     TrySetField<int>(title, value, "ID hráče", val => player.Id = val);
                     TrySetField<string>(title, value, "Jméno", val => player.Name = val);
+                    TrySetField<string>(title, value, "Národnost", val => player.Nationality = val);
                     TrySetField<int>(title, value, "Věk", val => player.Age = val);
                     TrySetField<string>(title, value, "Pozice", val =>
                     {
@@ -154,6 +156,54 @@ namespace FootballArenaCrawler
             }
 
             return false;
+        }
+
+        private void ParseStats(PlayerDetail player, IElement childElement)
+        {
+            if (childElement.TagName.Equals("table", StringComparison.InvariantCultureIgnoreCase))
+            {
+                foreach (IElement rowElement in childElement.QuerySelectorAll("tr"))
+                {
+                    string title = rowElement.Children[0].Text();
+                    if (title == "Liga")
+                    {
+                        SetStatsGroup(player.CurrentSeasonStats.League, rowElement.Children[1].Text());
+                        SetStatsGroup(player.PreviousSeasonStats.League, rowElement.Children[2].Text());
+                        SetStatsGroup(player.SumStats.League, rowElement.Children[3].Text());
+                    }
+                    else if (title == "Pohár")
+                    {
+                        SetStatsGroup(player.CurrentSeasonStats.Cup, rowElement.Children[1].Text());
+                        SetStatsGroup(player.PreviousSeasonStats.Cup, rowElement.Children[2].Text());
+                        SetStatsGroup(player.SumStats.Cup, rowElement.Children[3].Text());
+                    }
+                    else if (title == "Přátelské zápasy")
+                    {
+                        SetStatsGroup(player.CurrentSeasonStats.Friendly, rowElement.Children[1].Text());
+                        SetStatsGroup(player.PreviousSeasonStats.Friendly, rowElement.Children[2].Text());
+                        SetStatsGroup(player.SumStats.Friendly, rowElement.Children[3].Text());
+                    }
+                    else if (title == "Mezinárodní poháry")
+                    {
+                        SetStatsGroup(player.CurrentSeasonStats.InternationalCups, rowElement.Children[1].Text());
+                        SetStatsGroup(player.PreviousSeasonStats.InternationalCups, rowElement.Children[2].Text());
+                        SetStatsGroup(player.SumStats.InternationalCups, rowElement.Children[3].Text());
+                    }
+                    else if (title == "Reprezentace")
+                    {
+                        SetStatsGroup(player.CurrentSeasonStats.NationalTeam, rowElement.Children[1].Text());
+                        SetStatsGroup(player.PreviousSeasonStats.NationalTeam, rowElement.Children[2].Text());
+                        SetStatsGroup(player.SumStats.NationalTeam, rowElement.Children[3].Text());
+                    }
+                }
+            }
+        }
+
+        private static void SetStatsGroup(PlayerStatsGroup group, string current)
+        {
+            string[] parts = current.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            group.Appearances = Int32.Parse(parts[0]);
+            group.Goals = Int32.Parse(parts[1]);
         }
     }
 }
