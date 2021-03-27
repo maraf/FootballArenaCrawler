@@ -84,9 +84,11 @@ namespace FootballArenaCrawler
 
         private void ExportJson(Export export)
         {
-            log.LogInformation($"Saving export to '{configuration.ExportPath}'.");
+            string exportPath = configuration.ExportPath.Replace("{date}", DateTime.Today.ToString("yyyy-MM-dd"));
+
+            log.LogInformation($"Saving export to '{exportPath}'.");
             string json = JsonConvert.SerializeObject(export, Formatting.Indented);
-            File.WriteAllText(configuration.ExportPath, json);
+            File.WriteAllText(exportPath, json);
         }
 
         #region IHostedService
