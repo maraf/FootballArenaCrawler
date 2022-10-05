@@ -1,30 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-	  <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>FootballArenaCrawler</RootNamespace>
-    <AssemblyName>faexport</AssemblyName>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net7.0</TargetFramework>
+		<RootNamespace>FootballArenaCrawler</RootNamespace>
+		<AssemblyName>faexport</AssemblyName>
+		<LangVersion>latest</LangVersion>
+		<Version>1.0.0</Version>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="0.11.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.*" />
-    <PackageReference Include="Neptuo" Version="6.0.1" />
-  </ItemGroup>
+	<PropertyGroup>
+		<ContainerImageName>maraf/footballarenacrawler-exporter</ContainerImageName>
+		<ContainerBaseImage>mcr.microsoft.com/dotnet/runtime:7.0-bullseye-slim-amd64</ContainerBaseImage>
+		<RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+		<PublishProfile>DefaultContainer</PublishProfile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\FootballArenaCrawler.Models\FootballArenaCrawler.Models.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AngleSharp" Version="0.11.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0-*" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0-*" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0-*" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0-*" />
+		<PackageReference Include="Microsoft.NET.Build.Containers" Version="0.1.8" />
+		<PackageReference Include="Neptuo" Version="6.0.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="AppSettings.Development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\FootballArenaCrawler.Models\FootballArenaCrawler.Models.csproj" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'${Configuration}' == 'Debug'">
+		<None Update="AppSettings.Development.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
