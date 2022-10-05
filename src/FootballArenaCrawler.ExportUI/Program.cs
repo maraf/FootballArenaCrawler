@@ -32,7 +32,8 @@ namespace FootballArenaCrawler
         {
             builder
                 .AddJsonFile("AppSettings.json", true)
-                .AddJsonFile($"AppSettings.{context.HostingEnvironment.EnvironmentName}.json", true);
+                .AddJsonFile($"AppSettings.{context.HostingEnvironment.EnvironmentName}.json", true)
+                .AddEnvironmentVariables();
         }
 
         private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
