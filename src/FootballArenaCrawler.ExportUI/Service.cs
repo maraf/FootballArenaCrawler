@@ -3,12 +3,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Neptuo;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +16,11 @@ namespace FootballArenaCrawler
 {
     internal class Service : IHostedService
     {
+        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+
         private readonly ApiClient client;
         private readonly ILogger log;
         private readonly Configuration configuration;
@@ -87,7 +92,7 @@ namespace FootballArenaCrawler
             string exportPath = configuration.ExportPath.Replace("{date}", DateTime.Today.ToString("yyyy-MM-dd"));
 
             log.LogInformation($"Saving export to '{exportPath}'.");
-            string json = JsonConvert.SerializeObject(export, Formatting.Indented);
+            string json = JsonSerializer.Serialize(export, JsonOptions);
             File.WriteAllText(exportPath, json);
         }
 
